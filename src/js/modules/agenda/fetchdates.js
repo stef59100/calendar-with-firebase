@@ -1,16 +1,11 @@
 class Agenda {
     constructor() {
-        this.evenements = require('./data/agenda.json');
+        this.evenements = db.collection('events').get();
     }
 
-    async getDates() {
-        //const response = await fetch(this.products);
-
-        //const data = await response.json();
-        const data = this.evenements;
-        //console.log(data[0]);
-        return data;
-        
+    async getDates() {      
+        const data = this.evenements;       
+        return data;        
     };
 }
 export {Agenda as default};

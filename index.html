@@ -2,42 +2,67 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Hello !</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="dist/main.css">
-    </head>
-    <body>
-        <div class="container">          
-            <div id="agenda" class="calendar"></div>
-            <div class="js-eventForm hidden">
-                <div class="form-header">
-                    <h3>Ajouter un évènement</h3>
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Calendar with FireBase</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="dist/main.css">
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+ https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyAv8Vk3ND3tbjEh3R2O1tvv020Bt-pcvMM",
+        authDomain: "agenda-c326a.firebaseapp.com",
+        databaseURL: "https://agenda-c326a.firebaseio.com",
+        projectId: "agenda-c326a",
+        storageBucket: "agenda-c326a.appspot.com",
+        messagingSenderId: "340559036691",
+        appId: "1:340559036691:web:2b5334d9288fb7d27a5ae6"
+
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+</script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="agenda" class="calendar"></div>
+        <div class="js-eventForm hidden">
+            <div class="form-header">
+                <h3>Ajouter un évènement</h3>
+            </div>
+            <div class="form-content">
+                <label for="js-eventTitle">Intitulé de l'évènement</label>
+                <input type="text" name="js-eventTitle" id="eventTitle" class="js-eventTitle">
+                <label for="eventDesc">Description</label>
+                <textarea class="js-eventDesc" name="eventDesc" id="eventDesc" cols="30" rows="10"></textarea>
+                <div class="center mt-2">
+                    <button class="js-store btn orange base">Enregistrer</button>
                 </div>
-               <div class="form-content">
-                   <label for="js-eventTitle">Intitulé de l'évènement</label>
-                    <input type="text" name="js-eventTitle" id="eventTitle" class="js-eventTitle">
-                    <label for="eventDesc">Description</label>
-                    <textarea class="js-eventDesc" name="eventDesc" id="eventDesc" cols="30" rows="10"></textarea>
-                    <div class="center mt-2">
-                        <button class="js-store btn orange base">Enregistrer</button>
-                    </div>
-               </div>
             </div>
         </div>
-        <div class="js-overlay"></div>
-        
-
-       
-     
-        <!--[if lt IE 7]>
+    </div>
+    <div class="js-overlay"></div>
+    <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        
-        <script src="dist/bundle.js" async defer></script>
-    </body>
-</html> 
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    
+   
+    <script src="dist/bundle.js" async defer></script>
+</body>
+
+</html>

@@ -1,21 +1,13 @@
 import '../css/main.scss';
-import Agenda from './modules/agenda/fetchdates';
-import { BuildUi, Storage } from './modules/agenda/buildUi';
+//import Agenda from './modules/agenda/fetchdates';
+import { BuildAgenda } from './modules/agenda/buildUi';
 
 
-const dateList = new Agenda();
-const displayUi = new BuildUi();
+//const dateList = new Agenda();
+//displayUi.displayAgenda();
+const agendaDom = new BuildAgenda();
+agendaDom.init();
+agendaDom.displayAgenda();
 
+//
 
-displayUi.setupApp();
-
-
-dateList.getDates()
-    .then(data => {
-        
-       displayUi.displayAgenda(data);        
-        //Storage.saveEvenement(data);
-        Storage.saveAgenda(data);
-        displayUi.displayCalendarEvents(); 
-        displayUi.hideForm();
-    }).catch(err => console.log(err));
