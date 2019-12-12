@@ -1,9 +1,7 @@
 
-let agendaWithEvents;
 let formDiv = document.querySelector('.js-eventForm');
 const overlayDOM = document.querySelector(".js-overlay");
 const DateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
 
 class BuildAgenda {
     constructor() {
@@ -183,7 +181,6 @@ class BuildAgenda {
                     description: eventDesc.value
                 };
 
-
                 //Si tout est OK on pousse eventItem dans le tableau events
                 db.collection('events').add(eventItem).then(() => {
                     console.log('event added');
@@ -199,7 +196,6 @@ class BuildAgenda {
 
                 titleField.value = ``;
                 eventDesc.value = '';
-
             }
         })
     }
@@ -215,10 +211,7 @@ class BuildAgenda {
                     parentContainer.classList.remove('event');
                     broContainer.innerHTML = '';
                     let event_timestamp = e.target.dataset.event;                
-                    db.collection('events').doc(event_timestamp).delete();
-                           
-               
-            }, false)
+                    db.collection('events').doc(event_timestamp).delete();}, false)
         })
     }
     displayCalendarEvents(tStamp, title, eventDescription, eventId) {
@@ -249,6 +242,4 @@ class BuildAgenda {
         e.stopPropagation();
     }
 }
-
-
 export { BuildAgenda };
