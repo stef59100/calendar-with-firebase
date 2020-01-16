@@ -138,14 +138,14 @@ class BuildAgenda {
             cell.addEventListener('click', e => {
                 console.log(e.target, e.target.parentElement);
                 if(e.target.parentElement.classList.contains('event') && e.target.parentElement.dataset.period==="unlocked"){
-                    console.log('il y a un event');
+                    //console.log('il y a un event');
                     let isEvent = true;
                     let eventTitle = e.target.parentElement.querySelector('.event-title').textContent;
                     let eventDesc = e.target.parentElement.querySelector('.event-desc').textContent;
                     //console.log(eventTitle);
                     this.showForm(cell.dataset.identifier, isEvent, eventTitle, eventDesc);
                 }   else if (e.target.parentElement.dataset.period==="unlocked") {
-                    console.log('ca foire');
+                    //console.log('ca foire');
                     this.showForm(cell.dataset.identifier, null, null, null);
                 }
             })
@@ -201,7 +201,7 @@ class BuildAgenda {
 
         recordButton.addEventListener('click', (e) => {
             //On vérifie dans un premier temps que les champs sont remplis
-            console.log('click', timestamp);
+            //console.log('click', timestamp);
             if (titleField.value != '' && eventDesc != '') {
 
                 //on construit un objet avec "timestamp", "title" et "description"
@@ -213,7 +213,7 @@ class BuildAgenda {
 
                 //Si tout est OK on pousse eventItem dans le tableau events
                 db.collection('events').add(eventItem).then(() => {
-                    console.log('event added');
+                    //console.log('event added');
                     this.init();
                     //this.loadMonth(selectedMonth);
                 }).catch(err => {
@@ -237,7 +237,7 @@ class BuildAgenda {
                 const parentContainer = item.parentElement.parentElement;
                 const broContainer = parentContainer.querySelector('.event-content');
                 e.stopPropagation();
-                console.log(broContainer);
+                //(broContainer);
                 parentContainer.classList.remove('event');
                 broContainer.innerHTML = '';
                 let event_timestamp = e.target.dataset.event;
@@ -248,7 +248,7 @@ class BuildAgenda {
     displayCalendarEvents(tStamp, title, eventDescription, eventId) {
 
         let eventT = title;
-        console.log(tStamp.toMillis(), eventT);
+        //console.log(tStamp.toMillis(), eventT);
 
         //Parcourir tous les ".cell", lire leur "data-dentifier"
         // si le data-identifier existe dans l'un des events de l'agenda, on affiche l'evenement dans la cellule
@@ -258,7 +258,7 @@ class BuildAgenda {
             //console.log(parseInt(cellTimestamp));
             let eventContent = cell.querySelector('.event-content');
             if (tStamp.toMillis() == cellTimestamp) {
-                console.log('cell ok', eventT, tStamp.toMillis());
+                //console.log('cell ok', eventT, tStamp.toMillis());
                 cell.classList.add('event');
                 eventContent.innerHTML = `<span class="event-title">${eventT}</span><span class="event-desc">${eventDescription}</span>
                 <button class="btn orange base js-remove" data-event="${eventId}"  data-id="${cellTimestamp}">Supprimer</button>`;
