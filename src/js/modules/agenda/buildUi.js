@@ -23,18 +23,34 @@ class BuildAgenda {
 
     }
     init() {
-        db.collection('events').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                let timeS = (doc.data().event_timestamp !='')?doc.data().event_timestamp:null;
-                let eventTitle = doc.data().title;
-                let eventDescription = doc.data().description;
-                let eventId = doc.id;
-                console.log(timeS,eventTitle,eventDescription);
-               this.displayCalendarEvents(timeS, eventTitle, eventDescription, eventId);
-                
+        db.collection('events').onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                const doc = change.doc;
+                switch (change.type) {
+                    case 'added':
+                        let timeS = (doc.data().event_timestamp != '') ? doc.data().event_timestamp : null;
+                        let eventTitle = doc.data().title;
+                        let eventDescription = doc.data().description;
+                        let eventId = doc.id;
+                        console.log(timeS, eventTitle, eventDescription);
+                        this.displayCalendarEvents(timeS, eventTitle, eventDescription, eventId);
+                        break;
+                    case 'removed':
+                        console.log('removed');
+                        break;
+                }
             })
-          
-        }).catch(err => console.log(err));
+            //snapshot.forEach(doc => {
+            //     let timeS = (doc.data().event_timestamp !='')?doc.data().event_timestamp:null;
+            //     let eventTitle = doc.data().title;
+            //     let eventDescription = doc.data().description;
+            //     let eventId = doc.id;
+            //     console.log(timeS,eventTitle,eventDescription);
+            //    this.displayCalendarEvents(timeS, eventTitle, eventDescription, eventId);
+
+            // })
+
+        })
     }
     displayAgenda() {
         //construction du header
@@ -65,7 +81,7 @@ class BuildAgenda {
         // Action des boutons "précédent" et "suivant"
         this.domElement.querySelectorAll('.js-nav').forEach(element => {
             element.addEventListener('click', () => {
-                // On multiplie par 1 les valeurs pour forcer leur convertion en "int"
+                // On multiplie par 1 les valeurs pour forcer leur conversion en "int"
                 this.currentMonth.setMonth(this.currentMonth.getMonth() * 1 + element.dataset.action * 1);
                 this.loadMonth(this.currentMonth);
                 this.init();
@@ -117,12 +133,20 @@ class BuildAgenda {
             // Timestamp de la cellule
             let timestamp = new Date(date.getFullYear(), date.getMonth(), i).getTime();
             cell.dataset.identifier = timestamp;
+            cell.dataset.period ="unlocked";
 
-            cell.addEventListener('click', (e) => {               
-                console.log(e.target);
-                cell.classList.add('bonon');
-                if (!cell.classList.contains('past') || !cell.classList.contains('event')) {
-                    this.showForm(cell.dataset.identifier);                   
+            cell.addEventListener('click', e => {
+                console.log(e.target, e.target.parentElement);
+                if(e.target.parentElement.classList.contains('event') && e.target.parentElement.dataset.period==="unlocked"){
+                    console.log('il y a un event');
+                    let isEvent = true;
+                    let eventTitle = e.target.parentElement.querySelector('.event-title').textContent;
+                    let eventDesc = e.target.parentElement.querySelector('.event-desc').textContent;
+                    //console.log(eventTitle);
+                    this.showForm(cell.dataset.identifier, isEvent, eventTitle, eventDesc);
+                }   else if (e.target.parentElement.dataset.period==="unlocked") {
+                    console.log('ca foire');
+                    this.showForm(cell.dataset.identifier, null, null, null);
                 }
             })
 
@@ -131,20 +155,26 @@ class BuildAgenda {
                 cell.classList.add('today');
             } else if (timestamp < this.time.getTime()) {
                 cell.classList.add('past');
+                cell.dataset.period = "locked";
             }
         }
     }
-    showForm(timestamp) {
+    showForm(timestamp, isEvent, eventTitle, eventDesc) {
         //on fait apparaitre l'overlay
+       if (isEvent === true && eventTitle && eventDesc){
+           formDiv.querySelector('.js-eventTitle').value= eventTitle ;
+           formDiv.querySelector('.js-eventDesc').value= eventDesc;
+        } 
+       
         overlayDOM.style.zIndex = "9998";
         overlayDOM.style.opacity = "1";
         let selectedDay = new Date(parseInt(timestamp));
-        let selectedMonth =selectedDay.getMonth();
-        let dayDOM = document.createElement('h4');
+        let selectedMonth = selectedDay.getMonth();
+       
         selectedDay = selectedDay.toLocaleString('fr-FR', DateOptions);
-        //console.log(selectedDay);
-        dayDOM.textContent = selectedDay;
-        formDiv.querySelector('.form-header').appendChild(dayDOM);
+        //console.log(selectedDay);              
+        
+        formDiv.querySelector('.form-header').innerHTML= ` <h4>Nouvel évènement - ${selectedDay}</h4>`;    
 
         formDiv.dataset.timestamp = timestamp;
         formDiv.classList.toggle('hidden');
@@ -188,7 +218,7 @@ class BuildAgenda {
                     //this.loadMonth(selectedMonth);
                 }).catch(err => {
                     console.log(err)
-                }); 
+                });
                 //on referme et on réinitialise les champs
                 e.target.parentElement.parentElement.parentElement.classList.toggle('hidden');
                 overlayDOM.style.zIndex = "-1";
@@ -204,14 +234,15 @@ class BuildAgenda {
 
         removeBttn.forEach(item => {
             item.addEventListener('click', e => {
-               const parentContainer = item.parentElement.parentElement;
-               const broContainer = parentContainer.querySelector('.event-content');
-                    e.stopPropagation();
-                    console.log(broContainer);                   
-                    parentContainer.classList.remove('event');
-                    broContainer.innerHTML = '';
-                    let event_timestamp = e.target.dataset.event;                
-                    db.collection('events').doc(event_timestamp).delete();}, false)
+                const parentContainer = item.parentElement.parentElement;
+                const broContainer = parentContainer.querySelector('.event-content');
+                e.stopPropagation();
+                console.log(broContainer);
+                parentContainer.classList.remove('event');
+                broContainer.innerHTML = '';
+                let event_timestamp = e.target.dataset.event;
+                db.collection('events').doc(event_timestamp).delete();
+            }, false)
         })
     }
     displayCalendarEvents(tStamp, title, eventDescription, eventId) {
@@ -229,13 +260,11 @@ class BuildAgenda {
             if (tStamp.toMillis() == cellTimestamp) {
                 console.log('cell ok', eventT, tStamp.toMillis());
                 cell.classList.add('event');
-                eventContent.innerHTML = `<span>${eventT}</span><span>${eventDescription}</span>
+                eventContent.innerHTML = `<span class="event-title">${eventT}</span><span class="event-desc">${eventDescription}</span>
                 <button class="btn orange base js-remove" data-event="${eventId}"  data-id="${cellTimestamp}">Supprimer</button>`;
                 this.deleteEvent(cellTimestamp);
             }
-            else {
-                console.log("pas d'evenement");
-            }           
+           
         })
     }
     stopEvent(e) {
